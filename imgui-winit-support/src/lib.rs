@@ -537,6 +537,22 @@ impl WinitPlatform {
                     io.app_focus_lost = true;
                 }
             }
+            WindowEvent::Touch(touch) => {
+                let position = touch.location.to_logical(window.scale_factor());
+                let position = self.scale_pos_from_winit(window, position);
+                io.add_mouse_pos_event([position.x as f32, position.y as f32]);
+
+                match touch.phase {
+                    TouchPhase::Started => {
+                        io.add_mouse_button_event(imgui::MouseButton::Left, true);
+                    }
+                    TouchPhase::Moved => {}
+                    TouchPhase::Ended => {
+                        io.add_mouse_button_event(imgui::MouseButton::Left, false);
+                    }
+                    TouchPhase::Cancelled => {}
+                }
+            }
             _ => (),
         }
     }
